@@ -18,41 +18,44 @@
             background-color: var(--bg); color: var(--text);
             display: flex; flex-direction: column; 
             justify-content: center; align-items: center;
-            height: 100vh; margin: 0; font-family: 'Times New Roman', serif;
+            min-height: 100vh; margin: 0; font-family: 'Times New Roman', serif;
             transition: all 0.5s ease; 
             opacity: var(--dim); cursor: pointer;
-            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px;
-            box-sizing: border-box; overflow: hidden;
+            padding: 10px; box-sizing: border-box; overflow-x: hidden;
         }
 
         .clock-circle {
-            width: 280px; height: 280px; border: 8px solid var(--text);
+            width: 260px; height: 260px; border: 8px solid var(--text);
             border-radius: 50%; position: relative;
             background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
         }
 
-        .brand-top { position: absolute; width: 100%; text-align: center; top: 55px; font-weight: bold; font-size: 20px; letter-spacing: 2px; }
-        .brand-bottom { position: absolute; width: 100%; text-align: center; bottom: 65px; font-weight: bold; font-size: 14px; letter-spacing: 4px; font-family: Arial, sans-serif; }
+        .brand-top { position: absolute; width: 100%; text-align: center; top: 50px; font-weight: bold; font-size: 18px; letter-spacing: 2px; }
+        .brand-bottom { position: absolute; width: 100%; text-align: center; bottom: 60px; font-weight: bold; font-size: 12px; letter-spacing: 4px; font-family: Arial, sans-serif; }
         
-        .roman-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 22px; font-weight: bold; padding: 12px; box-sizing: border-box; }
+        .roman-number { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 20px; font-weight: bold; padding: 10px; box-sizing: border-box; }
         
         .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; transform: translateX(-50%); border-radius: 5px; }
-        .hour { width: 7px; height: 55px; background: var(--text); z-index: 3; }
-        .min { width: 4px; height: 85px; background: #fff; border: 1px solid #333; z-index: 2; }
-        .sec { width: 2px; height: 105px; background: #ff4444; z-index: 1; }
+        .hour { width: 6px; height: 50px; background: var(--text); z-index: 3; }
+        .min { width: 4px; height: 80px; background: #fff; border: 1px solid #333; z-index: 2; }
+        .sec { width: 2px; height: 95px; background: #ff4444; z-index: 1; }
         
-        #digital { font-size: 38px; margin: 15px 0; font-weight: bold; letter-spacing: 2px; }
+        #digital { font-size: 32px; margin: 5px 0; font-weight: bold; letter-spacing: 2px; }
         
-        .section { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 15px; width: 100%; max-width: 330px; margin: 8px 0; text-align: center; border: 1px solid var(--text); }
-        .btn { border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.2s; background: #e0e0e0; color: #333; }
-        .btn:active { transform: scale(0.92); }
+        .section { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; width: 100%; max-width: 320px; margin: 5px 0; text-align: center; border: 1px solid var(--text); }
         
-        input { background: #fff; color: #000; border: 1px solid #ccc; padding: 6px; border-radius: 5px; outline: none; }
-        .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; }
+        /* Input aur Buttons ka layout fix kiya */
+        .alarm-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 5px; }
+        input[type="time"] { padding: 8px; border-radius: 5px; border: none; font-size: 16px; width: 80%; }
         
-        /* Alarm active hone par glowing effect */
-        .alarm-glow { animation: glow 0.5s infinite alternate; }
+        .btn-group { display: flex; gap: 10px; width: 100%; justify-content: center; }
+        .btn { border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; background: #e0e0e0; color: #333; font-size: 13px; }
+        
+        .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+        
+        .alarm-glow { animation: glow 0.5s infinite alternate; background: rgba(255,0,0,0.4) !important; }
         @keyframes glow { from { box-shadow: 0 0 5px red; } to { box-shadow: 0 0 20px red; } }
     </style>
 </head>
@@ -69,17 +72,23 @@
     <div id="digital">00:00:00</div>
 
     <div class="section" id="alarmBox">
-        <strong>⏰ Alarm:</strong> 
-        <input type="time" id="alarmTime">
-        <button class="btn" style="background: var(--gold);" onclick="setAlarm()">SET</button>
-        <button class="btn" style="background: #ff4444; color: white;" onclick="stopAlarm()">OFF</button>
-        <p id="alarmStatus" style="font-size: 11px; margin: 5px 0 0 0;">ALARM OFF</p>
+        <strong>⏰ Alarm Setting</strong> 
+        <div class="alarm-controls">
+            <input type="time" id="alarmTime">
+            <div class="btn-group">
+                <button class="btn" style="background: var(--gold);" onclick="setAlarm()">SET</button>
+                <button class="btn" style="background: #ff4444; color: white;" onclick="stopAlarm()">OFF</button>
+            </div>
+        </div>
+        <p id="alarmStatus" style="font-size: 11px; margin-top: 5px;">ALARM OFF</p>
     </div>
 
     <div class="section">
-        <strong>⏱ Stopwatch:</strong> <span id="stopwatch">00:00:00</span><br>
-        <button class="btn" onclick="startStopwatch()">START/STOP</button>
-        <button class="btn" onclick="resetStopwatch()">RESET</button>
+        <strong>⏱ Stopwatch:</strong> <span id="stopwatch">00:00:00</span>
+        <div class="btn-group" style="margin-top:5px;">
+            <button class="btn" onclick="startStopwatch()">START/STOP</button>
+            <button class="btn" onclick="resetStopwatch()">RESET</button>
+        </div>
     </div>
 
     <div class="controls">
@@ -109,8 +118,7 @@
 
         function handleInteraction() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let docEl = document.documentElement;
-            if (docEl.requestFullscreen) docEl.requestFullscreen();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playSound(freq, vol, duration) {
@@ -129,31 +137,29 @@
             const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
             const currentTimeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
             
-            document.getElementById('digital').innerText = `${currentTimeStr}:${s.toString().padStart(2,'0')}`;
+            document.getElementById('digital').innerText = now.toLocaleTimeString();
             document.getElementById('sec-hand').style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
             document.getElementById('min-hand').style.transform = `translateX(-50%) rotate(${m * 6 + s * 0.1}deg)`;
             document.getElementById('hour-hand').style.transform = `translateX(-50%) rotate(${(h % 12) * 30 + m * 0.5}deg)`;
 
-            playSound(400, 0.04, 0.04);
-
-            // Alarm Check: Current Time match hona chahiye aur s < 15
-            if (alarmTime === currentTimeStr && s < 15 && isAlarmPlaying) {
+            // Alarm Logic
+            if (isAlarmPlaying && alarmTime === currentTimeStr && s < 30) {
                 playSound(880, 0.2, 0.5);
                 document.getElementById('alarmBox').classList.add('alarm-glow');
-            } else if (s >= 15 || alarmTime !== currentTimeStr) {
+                if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            } else if (s >= 30 || alarmTime !== currentTimeStr) {
                 document.getElementById('alarmBox').classList.remove('alarm-glow');
-                // Auto-stop after 15 sec if not clicked
-                if (s >= 15) isAlarmPlaying = false; 
             }
         }
 
         function setAlarm() { 
+            handleInteraction();
             const inputVal = document.getElementById('alarmTime').value;
             if(inputVal) {
                 alarmTime = inputVal; 
                 isAlarmPlaying = true;
-                document.getElementById('alarmStatus').innerText = "ALARM SET: " + alarmTime;
-                document.getElementById('alarmStatus').style.color = "var(--gold)";
+                document.getElementById('alarmStatus').innerText = "SET FOR: " + alarmTime;
+                document.getElementById('alarmStatus').style.color = "lime";
             }
         }
 
