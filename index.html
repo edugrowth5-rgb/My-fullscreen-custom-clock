@@ -50,6 +50,10 @@
         
         input { background: #fff; color: #000; border: 1px solid #ccc; padding: 6px; border-radius: 5px; outline: none; }
         .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; }
+        
+        /* Alarm active hone par glowing effect */
+        .alarm-glow { animation: glow 0.5s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 5px red; } to { box-shadow: 0 0 20px red; } }
     </style>
 </head>
 <body onclick="handleInteraction()">
@@ -64,10 +68,11 @@
 
     <div id="digital">00:00:00</div>
 
-    <div class="section">
+    <div class="section" id="alarmBox">
         <strong>⏰ Alarm:</strong> 
         <input type="time" id="alarmTime">
         <button class="btn" style="background: var(--gold);" onclick="setAlarm()">SET</button>
+        <button class="btn" style="background: #ff4444; color: white;" onclick="stopAlarm()">OFF</button>
         <p id="alarmStatus" style="font-size: 11px; margin: 5px 0 0 0;">ALARM OFF</p>
     </div>
 
@@ -89,6 +94,7 @@
         const romanNumerals = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
         let audioCtx, alarmTime = null, isNight = false;
         let swInterval, swSeconds = 0, swRunning = false;
+        let isAlarmPlaying = false;
 
         for (let i = 0; i < 12; i++) {
             let container = document.createElement('div');
@@ -101,13 +107,10 @@
             dial.appendChild(container);
         }
 
-        // Fullscreen Logic
         function handleInteraction() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
             let docEl = document.documentElement;
             if (docEl.requestFullscreen) docEl.requestFullscreen();
-            else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
         }
 
         function playSound(freq, vol, duration) {
@@ -124,26 +127,48 @@
         function update() {
             const now = new Date();
             const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-            const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+            const currentTimeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
             
-            document.getElementById('digital').innerText = `${timeStr}:${s.toString().padStart(2,'0')}`;
+            document.getElementById('digital').innerText = `${currentTimeStr}:${s.toString().padStart(2,'0')}`;
             document.getElementById('sec-hand').style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
             document.getElementById('min-hand').style.transform = `translateX(-50%) rotate(${m * 6 + s * 0.1}deg)`;
             document.getElementById('hour-hand').style.transform = `translateX(-50%) rotate(${(h % 12) * 30 + m * 0.5}deg)`;
 
             playSound(400, 0.04, 0.04);
-            if (alarmTime === timeStr && s < 15) playSound(880, 0.2, 0.5);
+
+            // Alarm Check: Current Time match hona chahiye aur s < 15
+            if (alarmTime === currentTimeStr && s < 15 && isAlarmPlaying) {
+                playSound(880, 0.2, 0.5);
+                document.getElementById('alarmBox').classList.add('alarm-glow');
+            } else if (s >= 15 || alarmTime !== currentTimeStr) {
+                document.getElementById('alarmBox').classList.remove('alarm-glow');
+                // Auto-stop after 15 sec if not clicked
+                if (s >= 15) isAlarmPlaying = false; 
+            }
         }
 
+        function setAlarm() { 
+            const inputVal = document.getElementById('alarmTime').value;
+            if(inputVal) {
+                alarmTime = inputVal; 
+                isAlarmPlaying = true;
+                document.getElementById('alarmStatus').innerText = "ALARM SET: " + alarmTime;
+                document.getElementById('alarmStatus').style.color = "var(--gold)";
+            }
+        }
+
+        function stopAlarm() {
+            isAlarmPlaying = false;
+            alarmTime = null;
+            document.getElementById('alarmStatus').innerText = "ALARM OFF";
+            document.getElementById('alarmStatus').style.color = "inherit";
+            document.getElementById('alarmBox').classList.remove('alarm-glow');
+        }
+        
         function setTheme(bg, text) { 
             document.documentElement.style.setProperty('--bg', bg); 
             document.documentElement.style.setProperty('--text', text);
             document.querySelector('meta[name="theme-color"]').setAttribute("content", bg);
-        }
-        
-        function setAlarm() { 
-            alarmTime = document.getElementById('alarmTime').value; 
-            document.getElementById('alarmStatus').innerText = "ALARM SET: " + alarmTime; 
         }
         
         function toggleNight() { 
