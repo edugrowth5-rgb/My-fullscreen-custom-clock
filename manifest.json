@@ -1,6 +1,6 @@
 {
   "name": "Sagar Royal Ultimate Clock",
-  "short_name": "SagarClock",
+  "short_name": "Stop Watch Clock",
   "start_url": "index.html",
   "display": "fullscreen",
   "background_color": "#000040",
